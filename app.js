@@ -1,60 +1,45 @@
-"use strict"
+const taskInput = document.getElementById("task-input");
+const taskForm = document.getElementById("task-form");
+const taskList = document.getElementById("task-list");
 
-let gorevListesi = [
-    { "id": 1, "gorevAdi": "Görev 1" },
-    { "id": 2, "gorevAdi": "Görev 2" },
-    { "id": 3, "gorevAdi": "Görev 3" },
-    { "id": 4, "gorevAdi": "Görev 4" },
-];
+taskForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const taskTitle = taskInput.value;
+    console.log(taskTitle);
 
-// form kısmını kodluyoruz
-
-displayTasks();
-
-function displayTasks() {
-    let ul = document.getElementById("task-list");
-    ul.innerHTML = "";
-
-    for (let gorev of gorevListesi) {
-
-        let li = `
-                <li class="task list-group-item">
-                    <div class="form-check">
-                        <input type="checkbox" id="${gorev.id}" class="form-check-input">
-                            <label for="${gorev.id}" class="form-check-label">${gorev.gorevAdi}</label>
-                    </div>
-                </li >
-        `;
-
-        // içerikleri en sona ekleyebileceğimiz kalıp 
-
-        ul.insertAdjacentHTML("beforeend", li);
-    }
-}
-
-
-document.querySelector("#btnAddNewTask").addEventListener("click", newTask);
-document.querySelector("#btnAddNewTask").addEventListener("keypress", function (){
-/*     event.preventDefault(); */
-    if (event.key == "Enter") {
-        document.getElementById("btnAddNewTask").click();
+    if (taskTitle == "") {
+        alert("Please Enter Task");
+    } else {
+        const listItem = document.createElement("li");
+        listItem.innerHTML = taskTitle;
+        taskList.append(listItem);
+        let span = document.createElement("span");
+        span.innerHTML = `&times;`;
+        listItem.appendChild(span);
+        taskInput.value = "";
+        saveListData();
     }
 });
 
-
-
-function newTask(event) {
-
-    let taskInput = document.querySelector("#txtTaskName");
-
-    if (taskInput.value == "") {
-        alert("görev girmelisiniz")
-    } else {
-        gorevListesi.push({ "id": gorevListesi.length + 1, "gorevAdi": taskInput.value });
-        taskInput.value = "";
-        displayTasks();
+taskList.addEventListener("click", (e) => {
+    if (e.target.tagName == "LI") {
+        e.target.classList.toggle("checked");
+        saveListData();
     }
 
-    event.preventDefault();
+    if (e.target.tagName == "SPAN") {
+        const li = e.target.parentElement;
+        li.remove();
+        saveListData();
+    }
+});
+
+function showListData() {
+    taskList.innerHTML = localStorage.getItem("listItem");
 }
 
+function saveListData() {
+    localStorage.setItem("listItem", taskList.innerHTML);
+}
+
+showListData();
